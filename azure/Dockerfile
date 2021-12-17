@@ -14,6 +14,7 @@ RUN  apt-get update \
     sudo \
     openssh-server \
     unzip \
+    python3-pip \
     zip
 
 ENV AZ_VERSION=2.2.0-1
@@ -64,3 +65,16 @@ RUN curl -sL https://www.mongodb.org/static/pgp/server-4.2.asc | \
     mongodb-org-shell \
     mongodb-org-tools
 RUN mongo --version
+### install python (pips for release server and datadog)
+# check versions installed
+RUN python3 -v
+RUN pip3 --version
+RUN sudo add-apt-repository ppa:deadsnakes/ppa -y
+RUN sudo apt install python3.9
+RUN python3 --version
+RUN sudo apt install python3-pip
+RUN pip3 --version
+RUN python3 -m pip install --upgrade pip chevron PyYAML requests tinydb jira pyOpenSSL datadog configparser argparse pathlib typing
+
+RUN chmod +x test.py
+CMD ["python ./test.sh"]
